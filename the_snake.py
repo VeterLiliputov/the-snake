@@ -67,6 +67,7 @@ class Apple(GameObject):
     # Pytest требует следующее: Если в конструктор класса `Apple` помимо
     # параметра `self` передаются какие-то ещё параметры - убедитесь, что
     # для них установлены значения по умолчанию.
+    # Написал бы так:
     # def __init__(self, occupied_positions: list[Pointer],
     #              body_color: Color = APPLE_COLOR) -> None:
     #     super().__init__(body_color=body_color)
