@@ -64,6 +64,14 @@ class Apple(GameObject):
     def __init__(self, body_color: Color = APPLE_COLOR) -> None:
         super().__init__(body_color=body_color)
 
+    # Pytest требует следующее: Если в конструктор класса `Apple` помимо
+    # параметра `self` передаются какие-то ещё параметры - убедитесь, что
+    # для них установлены значения по умолчанию.
+    # def __init__(self, occupied_positions: list[Pointer],
+    #              body_color: Color = APPLE_COLOR) -> None:
+    #     super().__init__(body_color=body_color)
+    #     self.randomize_position(occupied_positions)
+
     def randomize_position(self, occupied_positions: list[Pointer]) -> None:
         """Метод определяет случайное положение Apple на игровом поле."""
         while True:
@@ -173,6 +181,10 @@ def main() -> None:
     snake = Snake()
     apple = Apple()
     apple.randomize_position(snake.positions)
+
+    # См. комментарий в Apple. Тут бы написал так:
+    # snake = Snake()
+    # apple = Apple(snake.positions)
 
     while True:
         clock.tick(SPEED)
