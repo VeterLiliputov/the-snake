@@ -68,10 +68,9 @@ class Apple(GameObject):
     # параметра `self` передаются какие-то ещё параметры - убедитесь, что
     # для них установлены значения по умолчанию.
     # Написал бы так:
-    # def __init__(self, occupied_positions: list[Pointer],
-    #              body_color: Color = APPLE_COLOR) -> None:
-    #     super().__init__(body_color=body_color)
-    #     self.randomize_position(occupied_positions)
+    #       ...elf, occupied_positions: list[Pointer],...PLE_COLOR)...
+    #       super...
+    #       rand....sition(occupied_positions)
 
     def randomize_position(self, occupied_positions: list[Pointer]) -> None:
         """Метод определяет случайное положение Apple на игровом поле."""
@@ -180,12 +179,11 @@ def main() -> None:
     pg.init()
 
     snake = Snake()
+    # См. комментарий в Apple.
+    # В аргументе указал змея.positions
     apple = Apple()
+    # Эту строку убрал.
     apple.randomize_position(snake.positions)
-
-    # См. комментарий в Apple. Тут бы написал так:
-    # snake = Snake()
-    # apple = Apple(snake.positions)
 
     while True:
         clock.tick(SPEED)
