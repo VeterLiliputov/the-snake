@@ -61,16 +61,21 @@ class GameObject:
 class Apple(GameObject):
     """Класс хранит цвет яблока и случайную позицию."""
 
-    def __init__(self, body_color: Color = APPLE_COLOR) -> None:
+    # Если установить None | None, то pytest снова выдает это:
+    # ERROR tests/test_code_structure.py::test_apple_attributes[draw] -
+    # AssertionError: При создании объекта класса `Apple` произошла ошибка:
+    # `TypeError: argument of type 'NoneType' is not a container or iterable`
+    # Если в конструктор класса `Apple` помимо параметра `self` передаются
+    # какие-то ещё параметры - убедитесь, что для них установлены значения по
+    # умолчанию Например:def __init__(self, <параметр>=<значение_по_умолчанию>)
+    # Поэтому по умолчанию поставил единственную занятую в начале игры точку,
+    # а именно центр экрана, занятый головой змеи.
+    def __init__(self, occupied_positions=(SCREEN_WIDTH // 2,
+                                           SCREEN_HEIGHT // 2),
+                 body_color: Color = APPLE_COLOR) -> None:
         super().__init__(body_color=body_color)
-
-    # Pytest требует следующее: Если в конструктор класса `Apple` помимо
-    # параметра `self` передаются какие-то ещё параметры - убедитесь, что
-    # для них установлены значения по умолчанию.
-    # Написал бы так:
-    #       ...elf, occupied_positions: list[Pointer],...PLE_COLOR)...
-    #       super...
-    #       rand....sition(occupied_positions)
+        self.occupied_positions = occupied_positions or []
+        self.randomize_position(occupied_positions)
 
     def randomize_position(self, occupied_positions: list[Pointer]) -> None:
         """Метод определяет случайное положение Apple на игровом поле."""
@@ -114,10 +119,9 @@ class Snake(GameObject):
         head_y = (head_y + (self.direction[1] * GRID_SIZE)) % SCREEN_HEIGHT
         new_head_position = (head_x, head_y)
         self.positions.insert(0, new_head_position)
-        if len(self.positions) > self.length:
-            self.last = self.positions.pop()
-        else:
-            self.last = None
+        self.last = (
+            self.positions.pop() if len(self.positions) > self.length else None
+        )
 
     def update_direction(self) -> None:
         """Метод отвечает за обновление направления движения."""
@@ -179,11 +183,7 @@ def main() -> None:
     pg.init()
 
     snake = Snake()
-    # См. комментарий в Apple.
-    # В аргументе указал змея.positions
-    apple = Apple()
-    # Эту строку убрал.
-    apple.randomize_position(snake.positions)
+    apple = Apple(snake.positions)
 
     while True:
         clock.tick(SPEED)
@@ -196,8 +196,8 @@ def main() -> None:
             apple.randomize_position(snake.positions)
 
         if snake.get_head_position() in snake.positions[1:]:
-            apple.randomize_position(snake.positions)
             snake.reset()
+            apple.randomize_position(snake.positions)
 
         screen.fill(BOARD_BACKGROUND_COLOR)
 
