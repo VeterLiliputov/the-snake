@@ -10,6 +10,7 @@ SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
 GRID_SIZE: int = 20
 GRID_WIDTH: int = SCREEN_WIDTH // GRID_SIZE
 GRID_HEIGHT: int = SCREEN_HEIGHT // GRID_SIZE
+SCREEN_CENTER: Pointer = SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2
 
 # Направления движения:
 UP: Pointer = (0, -1)
@@ -48,8 +49,8 @@ class GameObject:
     Хранит позицию объекта на игровом поле и цвет объекта.
     """
 
-    def __init__(self, position=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
-                 body_color=BOARD_BACKGROUND_COLOR) -> None:
+    def __init__(self, position: Pointer = SCREEN_CENTER,
+                 body_color: Color = BOARD_BACKGROUND_COLOR) -> None:
         self.position = position
         self.body_color = body_color
 
@@ -61,21 +62,10 @@ class GameObject:
 class Apple(GameObject):
     """Класс хранит цвет яблока и случайную позицию."""
 
-    # Если установить None | None, то pytest снова выдает это:
-    # ERROR tests/test_code_structure.py::test_apple_attributes[draw] -
-    # AssertionError: При создании объекта класса `Apple` произошла ошибка:
-    # `TypeError: argument of type 'NoneType' is not a container or iterable`
-    # Если в конструктор класса `Apple` помимо параметра `self` передаются
-    # какие-то ещё параметры - убедитесь, что для них установлены значения по
-    # умолчанию Например:def __init__(self, <параметр>=<значение_по_умолчанию>)
-    # Поэтому по умолчанию поставил единственную занятую в начале игры точку,
-    # а именно центр экрана, занятый головой змеи.
-    def __init__(self, occupied_positions=(SCREEN_WIDTH // 2,
-                                           SCREEN_HEIGHT // 2),
+    def __init__(self, occupied_positions: list[Pointer] | None = None,
                  body_color: Color = APPLE_COLOR) -> None:
         super().__init__(body_color=body_color)
-        self.occupied_positions = occupied_positions or []
-        self.randomize_position(occupied_positions)
+        self.randomize_position(occupied_positions or [])
 
     def randomize_position(self, occupied_positions: list[Pointer]) -> None:
         """Метод определяет случайное положение Apple на игровом поле."""
@@ -100,13 +90,15 @@ class Snake(GameObject):
     и отрисовку змейки.
     """
 
-    def __init__(self, body_color: Color = SNAKE_COLOR) -> None:
+    def __init__(self, position: Pointer = SCREEN_CENTER,
+                 body_color: Color = SNAKE_COLOR) -> None:
         super().__init__(body_color=body_color)
         self.length: int = 1
         self.direction: Pointer = RIGHT
         self.next_direction: Pointer | None = None
         self.last: Pointer | None = None
         self.positions = [self.position]
+        self.position = position
 
     def get_head_position(self) -> Pointer:
         """Метод возвращает координаты головы змейки."""
